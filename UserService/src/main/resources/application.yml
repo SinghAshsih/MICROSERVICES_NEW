@@ -1,0 +1,44 @@
+server:
+  port: 8081
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    password: Ashish
+    url: jdbc:mysql://localhost:3306/microservices?allowPublicKeyRetrieval=true
+    username: root
+  config:
+    import: configserver:http://localhost:8084 
+  application:
+    name: USER-SERVICE
+jpa:
+  hibernate:
+     ddl-auto: update
+  properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQLDialect
+        format_sql: true
+  show-sql: true
+management:
+  health:
+    circuitbreakers:
+      enabled: true
+  endpoints:
+    web:
+      exposure:
+        include:
+        - health
+  endpoint:
+    health:
+      show-details: always
+resilience4j:
+  circuitbreaker:
+    instances:
+        ratingHotelBreaker:
+          register-health-indicator: true
+          event-consumer-buffer-size: 10
+          failure-rate-threshold: 50
+          minimum-number-of-calls: 5
+          automatic-transition-from-open-to-half-open-enabled: true
+          wait-duration-in-open-state: 6s
+          permitted-number-of-calls-in-half-open-state: 3
+          sliding-window-size: 10 
